@@ -149,7 +149,7 @@ class CheckoutApi_Client_ClientGW3 extends CheckoutApi_Client_Client
         $this->flushState();
         $isAmountValid = CheckoutApi_Client_Validation_GW3::isValueValid($postedParam);
         $isCurrencyValid = CheckoutApi_Client_Validation_GW3::isValidCurrency($postedParam);
-        $uri = $this->getUriToken();
+        $uri = $this->getUriToken().'/payment';
 
         if(!$isAmountValid) {
             $hasError =  true;
@@ -292,6 +292,28 @@ class CheckoutApi_Client_ClientGW3 extends CheckoutApi_Client_Client
         return $this->request( $this->getUriCharge() ,$param,!$hasError);
     }
 
+
+    public function verifyChargePaymentToken(array $param)
+    {
+        $hasError = false;
+        $param['postedParam']['type'] = CheckoutApi_Client_Constant::CHARGE_TYPE;
+        $param['method'] = CheckoutApi_Client_Adapter_Constant::API_GET;
+        $this->flushState();
+
+        $isToenValid = CheckoutApi_Client_Validation_GW3::isPaymentToken($param);
+        $uri = $this->getUriCharge();
+
+        if(!$isToenValid) {
+            $hasError = true;
+            $this->throwException('Please provide a valid payment token ',array('param'=>$param));
+
+        } else {
+
+            $uri = "$uri/{$param['paymentToken']}";
+        }
+
+        return $this->request( $uri ,$param,!$hasError);
+    }
     /**
      * Refund  Charge
      *  This method refunds a Card Charge that has previously been created but not yet refunded
@@ -1041,7 +1063,7 @@ class CheckoutApi_Client_ClientGW3 extends CheckoutApi_Client_Client
                 $respond = $this->getParser()->parseToObj($respondString);
 
 
-                if($respond->hasErrorCode() && $respond->hasErrors()) {
+                if($respond->hasErrorCode() && $respond->hasErrors() && $respond) {
 
                     /** @var CheckoutApi_Lib_ExceptionState  $exceptionStateObj */
                     $exceptionStateObj = $respond->getExceptionState();
@@ -1051,11 +1073,14 @@ class CheckoutApi_Client_ClientGW3 extends CheckoutApi_Client_Client
                     foreach( $errors as $error) {
                         $this->throwException($error, $respond->getErrors()->toArray());
                     }
-                }elseif($respond->hasErrorCode()) {
+                }elseif($respond->hasErrorCode() && $respond) {
                     /** @var CheckoutApi_Lib_ExceptionState  $exceptionStateObj */
                     $exceptionStateObj = $respond->getExceptionState();
 
                     $this->throwException($respond->getMessage(),$respond->toArray() );
+
+                }elseif(!$respond) {
+                    $this->throwException('Gateway is temporary down',$param );
                 }
 
                 $adapter->close();
@@ -1217,13 +1242,13 @@ class CheckoutApi_Client_ClientGW3 extends CheckoutApi_Client_Client
 		$mode = strtolower($this->getMode());
 		switch ($mode) {
 			case 'live':
-				$prefix = CheckoutApi_Client_Constant::APIGW3_URI_PREFIX_LIVE;
+				$prefix = CheckoutApi_Client_Constant::APIGW3_URI_PREFIX_LIVE.CheckoutApi_Client_Constant::VERSION.'/';
 				break;
 			case 'preprod':
-				$prefix = CheckoutApi_Client_Constant::APIGW3_URI_PREFIX_PREPOD;
+				$prefix = CheckoutApi_Client_Constant::APIGW3_URI_PREFIX_PREPOD.CheckoutApi_Client_Constant::VERSION.'/';
 				break;
 			default:
-				$prefix = CheckoutApi_Client_Constant::APIGW3_URI_PREFIX_DEV;
+				$prefix = CheckoutApi_Client_Constant::APIGW3_URI_PREFIX_DEV.CheckoutApi_Client_Constant::VERSION.'/';
 				break;
 		}
 		return $prefix;

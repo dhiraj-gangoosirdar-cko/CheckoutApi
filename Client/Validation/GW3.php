@@ -400,6 +400,27 @@ final class CheckoutApi_Client_Validation_GW3 extends CheckoutApi_Lib_Object
 		return $isValid;
 	}
 
+	/**
+	 *  A helper method that check that check if paymentToken is set in payload
+	 * @param array $param
+	 * @return boolean
+	 * Simple usage:
+	 *       CheckoutApi_Client_Validation_GW3::isPaymentToken($param)
+	 */
+	public static function isPaymentToken($param)
+	{
+		$isValid = false;
+
+		if(isset($param['paymentToken'])){
+			$isTokenEmpty = CheckoutApi_Lib_Validator::isEmpty($param['paymentToken']);
+
+			if(!$isTokenEmpty) {
+				$isValid = true;
+			}
+		}
+
+		return $isValid;
+	}
     /**
      *  A helper method that check that check if session token is set in payload
      * @param array $param
