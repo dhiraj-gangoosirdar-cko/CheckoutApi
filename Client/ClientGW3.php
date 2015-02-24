@@ -1319,4 +1319,13 @@ class CheckoutApi_Client_ClientGW3 extends CheckoutApi_Client_Client
             }";
         return $script;
     }
+
+    public function chargeToObj($charge)
+    {
+        if($charge) {
+            return  $this->getParser()->parseToObj($charge);
+        }
+
+        return null;
+    }
 }
