@@ -427,6 +427,39 @@ class CheckoutApi_Client_ClientGW3 extends CheckoutApi_Client_Client
     }
 
     /**
+     * Get   Charge.
+     * Get the specified Card Charge by setting the values of the parameters passed.
+     * @param array $param payload param
+     * @return CheckoutApi_Lib_RespondObj
+     * @throws Exception
+     *  Simple usage:
+     *      $param['postedParam'] = array ('description'=> 'dhiraj is doing some test');
+     *      $updateCharge = $Api->updateCharge($param);
+     */
+
+    public function  getCharge($param)
+    {
+        $hasError = false;
+        $param['postedParam']['type'] = CheckoutApi_Client_Constant::CHARGE_TYPE;
+        $param['method'] = CheckoutApi_Client_Adapter_Constant::API_GET;
+
+        $this->flushState();
+
+        $isChargeIdValid = CheckoutApi_Client_Validation_GW3::isChargeIdValid($param);
+        $uri = $this->getUriCharge();
+
+        if(!$isChargeIdValid) {
+            $hasError = true;
+            $this->throwException('Please provide a valid charge id',array('param'=>$param));
+
+        } else {
+
+            $uri = "$uri/{$param['chargeId']}";
+        }
+
+        return $this->request( $uri ,$param,!$hasError);
+    }
+    /**
      * Create LocalPayment Charge.
      * Creates a LocalPayment Charge using a Session Token and
      * @param array $param payload param for creating a localpayment
