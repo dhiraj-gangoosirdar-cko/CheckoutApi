@@ -461,6 +461,35 @@ class CheckoutApi_Client_ClientGW3 extends CheckoutApi_Client_Client
         return $this->request( $uri ,$param,!$hasError);
     }
 
+     /**
+     * Update Trackid   Charge.
+     * Updates the specified Card Charge by setting the values of the parameters passed.
+     * @param array $param payload param
+     * @return CheckoutApi_Lib_RespondObj
+     * @throws Exception
+     *  Simple usage:
+     *      $param['postedParam'] = array ('trackId'=> '#trackId');
+     *      $updateCharge = $Api->updateCharge($param);
+     */
+
+    public function  updateTrackId($chargeObj, $trackId)
+    {
+        $hasError = false;
+        $param['postedParam']['type'] = CheckoutApi_Client_Constant::CHARGE_TYPE;
+        $param['method'] = CheckoutApi_Client_Adapter_Constant::API_PUT;
+
+        $this->flushState();
+
+        $chargeId = $chargeObj->getId();
+       
+        $param['postedParam']['trackId']    =    $trackId;
+        $uri = $this->getUriCharge();
+        $uri = "$uri/{$chargeId}";
+       
+
+        return $this->request( $uri ,$param,!$hasError);
+    }
+
     /**
      * Get   Charge.
      * Get the specified Card Charge by setting the values of the parameters passed.
