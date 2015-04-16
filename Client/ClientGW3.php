@@ -432,8 +432,8 @@ class CheckoutApi_Client_ClientGW3 extends CheckoutApi_Client_Client
      * @return CheckoutApi_Lib_RespondObj
      * @throws Exception
      *  Simple usage:
-     *      $param['postedParam'] = array ('description'=> 'dhiraj is doing some test');
-     *      $updateCharge = $Api->updateCharge($param);
+     *      $param['postedParam'] = array ('key code'=> 'value');
+     *      $updateCharge = $Api->updateMetadata($chargeObj, $metaData);
      */
 
     public function  updateMetadata($chargeObj, $metaData = array())
@@ -469,7 +469,7 @@ class CheckoutApi_Client_ClientGW3 extends CheckoutApi_Client_Client
      * @throws Exception
      *  Simple usage:
      *      $param['postedParam'] = array ('trackId'=> '#trackId');
-     *      $updateCharge = $Api->updateCharge($param);
+     *      $updateCharge = $Api->updateTrackId($chargeObj, $param);
      */
 
     public function  updateTrackId($chargeObj, $trackId)
